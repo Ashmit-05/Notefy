@@ -69,3 +69,4 @@ trace.out
 # Temporary files
 tmp/
 
+.env
