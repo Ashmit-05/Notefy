@@ -8,12 +8,15 @@ import (
 	"io"
 	"net/http"
 	"os"
+    "io/ioutil"
+    "log"
 
 	"github.com/Ashmit-05/notefy/database"
 	"github.com/Ashmit-05/notefy/models"
 	"github.com/unidoc/unipdf/v3/extractor"
 	"github.com/unidoc/unipdf/v3/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "golang.org/x/text"
 )
 
 
@@ -102,16 +105,39 @@ func extractTextFromPDF(r *http.Request) ([]byte,error) {
 		// extractedText += fmt.Sprintf("------------------------------\nPage %d:\n%s\n------------------------------\n", pageNum, text)
 		extractedText += text
 	}
-
-	fmt.Println(extractedText)
+	// fmt.Println("hello")
+	// fmt.Println(extractedText)
 	return []byte(extractedText), nil
 
 }
 
 
 func getTextSummary(textData []byte) (string, error) {
-	requestBody := map[string]interface{} {
-		"inputs" : textData,
+
+	prompt := string(textData)
+	chunks := chunkString(prompt, 10000)
+
+	err := ioutil.WriteFile("prompt.txt", []byte(prompt), 0644)
+    if err != nil {
+        log.Fatalf("Failed writing to file: %s", err)
+    }
+
+	finalResponse :=""
+
+	for _, chunk := range chunks {
+			requestBody := map[string]interface{}{
+		"messages": []map[string]interface{}{
+			{
+				"role":    "system",
+				"content":"you are a document summarizer. Summarize the following text: "+chunk,
+			},
+		},
+		"max_tokens":        6000,
+		"temperature":       0.7,
+		"frequency_penalty": 0,
+		"presence_penalty":  0,
+		"top_p":             0.95,
+		"stop":              nil,
 	}
 
 	// Convert request body to JSON
@@ -121,15 +147,17 @@ func getTextSummary(textData []byte) (string, error) {
 	}
 
 	// Create a new HTTP request
-	req, err := http.NewRequest("POST", "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6", bytes.NewBuffer(requestBodyBytes))
+	req, err := http.NewRequest("POST", "https://curiositycreator.openai.azure.com/openai/deployments/curiositycreator/chat/completions?api-version=2024-02-15-preview", bytes.NewBuffer(requestBodyBytes))
 	if err != nil {
 		return "", err
 	}
 
+
 	// Set headers
-	model_token := os.Getenv("MODEL_TOKEN")
+	// model_token := os.Getenv("MODEL_TOKEN")
+	api_key := os.Getenv("API_KEY")
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer " + model_token) 
+	req.Header.Set("api-key" ,api_key)
 
 	// Send the request
 	client := &http.Client{}
@@ -139,11 +167,34 @@ func getTextSummary(textData []byte) (string, error) {
 	}
 	defer resp.Body.Close()
 
+// Assuming resp is your map
+
 	// Read the response body
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
-	return string(responseBody), nil
+	finalResponse += string(responseBody)
+	}
+	return string(finalResponse), nil
+}
+
+func chunkString(s string, chunkSize int) []string {
+    var chunks []string
+
+    runeStr := []rune(s)
+    strLen := len(runeStr)
+
+    for i := 0; i < strLen; i += chunkSize {
+        end := i + chunkSize
+
+        if end > strLen {
+            end = strLen
+        }
+
+        chunks = append(chunks, string(runeStr[i:end]))
+    }
+
+    return chunks
 }
