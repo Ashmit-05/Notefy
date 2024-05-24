@@ -13,6 +13,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type response struct {
+	StatusCode int
+	Message string
+	UserId primitive.ObjectID
+}
+
 func SignUp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type","application/json")
 	w.Header().Set("Allow-Control-Allow-Methods","POST")
@@ -83,6 +89,11 @@ func SignIn(w http.ResponseWriter,r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode("Successfully logged in")
-	
+	resp := response{
+		200,
+		"Successfully logged in",
+		userdata.Id,
+	}
+
+	json.NewEncoder(w).Encode(resp)
 }
