@@ -12,17 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func CheckIfUserExists(email string) (models.User,bool) {
+func CheckIfUserExists(email string) (*models.User,bool) {
 	filter := bson.M{"email":email}
 	var user models.User
 	err := database.UserCollection.FindOne(context.Background(),filter).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return user,false
+			return &user,false
 		}
 		log.Printf("error in checking database for given email : %s",err)
 	}
-	return user,true
+	return &user,true
 }
 
 func CheckUserData(user models.User) error {
