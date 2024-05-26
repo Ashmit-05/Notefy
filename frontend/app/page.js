@@ -1,9 +1,18 @@
+"use client";
 import UserCard from '@/components/UserCard';
 import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
+import { useState,useEffect } from 'react';
 
 export default function Home() {
-    const user=localStorage.getItem('email');
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const storedUser = localStorage.getItem('name');
+        setUser(storedUser);
+      }
+    }, []);
     return (
         <main className="p-5">
             <nav className="flex justify-between">

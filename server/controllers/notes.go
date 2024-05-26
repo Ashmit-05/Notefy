@@ -55,7 +55,7 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Here's the summary : ", noteText)
+	// fmt.Println("Here's the summary : ", noteText)
 
 	var note models.Notes
 	note.Note_id = primitive.NewObjectID()
@@ -64,6 +64,7 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 	uid := r.FormValue("userid")
 	note.UserId, err = primitive.ObjectIDFromHex(uid)
 	user, err := middlewares.GetUser(note.UserId)
+	fmt.Println("user : ",user)
 	if err != nil {
 		http.Error(w,"Encoutered an error", http.StatusInternalServerError)
 		return
@@ -79,6 +80,7 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(userUpdateResult)
 	result, err := database.NotesCollection.InsertOne(context.Background(),note)
+	fmt.Println("result : ",result)
 	if err != nil {
 		http.Error(w,"Encoutered an error", http.StatusInternalServerError)
 		return

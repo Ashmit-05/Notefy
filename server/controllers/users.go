@@ -16,7 +16,7 @@ import (
 type response struct {
 	StatusCode int
 	Message string
-	UserId primitive.ObjectID
+	UserId interface{}
 }
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
@@ -91,7 +91,7 @@ func SignIn(w http.ResponseWriter,r *http.Request) {
 
 	resp := response{
 		200,
-		"Successfully logged in",
+		userdata.Name,
 		userdata.Id,
 	}
 

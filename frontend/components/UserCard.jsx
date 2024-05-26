@@ -11,13 +11,14 @@ export default function UserCard() {
     const [loading, setLoading] = useState(false);
     const [selectedPdf, setSelectedPdf] = useState(null);
     const [summary, setSummary]=useState();
-    const userID="6637e75e1f3f5a388501be6f";
+    let userID = localStorage.getItem('userid')
     const handlePdfUpload = async (pdf) => {
         if (!pdf) return;
         setLoading(true);
         const formData = new FormData();
         formData.append('file', pdf);
         formData.append('userid', userID);
+        console.log(formData);
         try {
             const response = await fetch('http://localhost:8080/note', {
                 method: 'POST',
