@@ -27,6 +27,19 @@ type UserNotes struct {
     Notes []models.Notes `json:"notes" bson:"notes"`
 }
 
+type Message struct {
+	Content string `json:"content"`
+	Role    string `json:"role"`
+}
+
+type Choice struct {
+	Message Message `json:"message"`
+}
+
+type APIResponse struct {
+	Choices []Choice `json:"choices"`
+}
+
 func CreateNote(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type","application/json")
 	w.Header().Set("Allow-Control-Allow-Methods","POST")
@@ -222,9 +235,18 @@ func getTextSummary(textData []byte) (string, error) {
 		return "", err
 	}
 
-	finalResponse += string(responseBody)
+	var apiResponse APIResponse
+	err = json.Unmarshal(responseBody,&apiResponse)
+	if err != nil {
+		return "",fmt.Errorf("error in unmarshalling json : %w",err)
 	}
-	return string(finalResponse), nil
+
+	for _, choice := range apiResponse.Choices {
+		finalResponse += choice.Message.Content
+	}
+}
+return finalResponse,nil
+
 }
 
 func chunkString(s string, chunkSize int) []string {
