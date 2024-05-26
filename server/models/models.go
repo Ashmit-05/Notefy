@@ -13,6 +13,7 @@ type User struct {
 
 type Notes struct {
 	Note_id primitive.ObjectID `bson:"_id"`
+	Title string `json:"title"`
 	Category string `json:"category"`
 	Text string `json:"text" validate:"required"`
 	UserId primitive.ObjectID `json:"userid" validate:"required"`

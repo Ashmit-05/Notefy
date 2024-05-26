@@ -56,10 +56,17 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// fmt.Println("Here's the summary : ", noteText)
+	file, fileHeader, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Unexpected error. Please try again later", http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
 
 	var note models.Notes
 	note.Note_id = primitive.NewObjectID()
 	note.Text = noteText
+	note.Title = fileHeader.Filename
 
 	uid := r.FormValue("userid")
 	note.UserId, err = primitive.ObjectIDFromHex(uid)
