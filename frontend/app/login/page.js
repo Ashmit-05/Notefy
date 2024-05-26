@@ -19,8 +19,12 @@ function Login() {
             body: JSON.stringify({ email, password }),
         });
         if (response.status === 200) {
+            const data = await response.json()
+            console.log(data)
             alert('Login successful');
             localStorage.setItem('email', email);
+            localStorage.setItem('userid', data.UserId);
+            localStorage.setItem('name', data.Message);
             router.push('/');
         } else {
             alert('Login failed');

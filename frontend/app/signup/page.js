@@ -32,8 +32,13 @@ function Signup() {
             body: JSON.stringify({ name, email, password }),
         });
         if (response.status === 200) {
+            const data = await response.json()
+            console.log(data)
+            localStorage.setItem('userid',data.InsertedID)
+            localStorage.setItem('email',email)
+            localStorage.setItem('name',name)
             alert('Signup successful');
-            router.push('/login');
+            router.push('/');
         } else {
             alert('Signup failed');
         }
