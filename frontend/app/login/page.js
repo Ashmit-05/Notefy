@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -21,13 +22,13 @@ function Login() {
         if (response.status === 200) {
             const data = await response.json()
             console.log(data)
-            alert('Login successful');
+            toast.success('Login successful');
             localStorage.setItem('email', email);
             localStorage.setItem('userid', data.UserId);
             localStorage.setItem('name', data.Message);
             router.push('/');
         } else {
-            alert('Login failed');
+            toast.error('Login failed');
         }
     };
 
