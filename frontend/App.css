@@ -63,3 +63,39 @@ body{
 .signup-text, .login-text{
   color: #72635D;
 }
+
+/* This is the css for the sticky notes card */
+
+.sticky-notes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.sticky-note {
+  width: 200px;
+  padding: 16px;
+  background-color: #ffeb3b;
+  border: 1px solid #fbc02d;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.sticky-note.expanded {
+  width: 400px;
+  transform: scale(1.05);
+}
+.sticky-note h3 {
+  margin: 0 0 8px;
+}
+.sticky-note p {
+  margin: 0;
+}
+.sticky-note button {
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+}
